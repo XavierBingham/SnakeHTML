@@ -2,6 +2,7 @@ import LinkedList from "../Utils/LinkedList.js";
 import MoveInfo from "../Input/MoveInfo.js";
 import Body from "./Body.js";
 import MathUtil from "../Utils/MathUtil.js";
+import Grid from "../Grid/GridSystem.js";
 
 let _Settings;
 
@@ -75,21 +76,35 @@ export default class SnakeCharacter {
                 }
             }
             this.BodyLinkedList.Push(position);
-            //send newHead to grid with position
+            Grid.Append(position.x, position.y, newPiece);
         }
 
     }
 
     Grow(){
-        newPiece = Body.CreateBody();
+
+        //updating head position
+        currHeadPosition = this.BodyLinkedList.head.storage;
         position = {
-            x: this.BodyLinkedList.head.storage.x + (MoveInfo.axis == "x")?MoveInfo.direction:0,
-            y: this.BodyLinkedList.head.storage.y + (MoveInfo.axis == "y")?MoveInfo.direction:0,
+            x: currHeadPosition.x + (MoveInfo.axis == "x")?MoveInfo.direction:0,
+            y: currHeadPosition.y + (MoveInfo.axis == "y")?MoveInfo.direction:0,
         }
         this.BodyLinkedList.Push(position);
         this.LastMoveDirection.x = position.x;
         this.LastMoveDirection.y = position.y;
-        // TO DO: swap head cell with position, and set the cell position of the new body piece to old head position
+        Grid.Move(
+            currHeadPosition.x,
+            currHeadPosition.y,
+            position.x,
+            position.y
+        );
+        this.BodyLinkedList.head.SetStorage(position);
+
+        //creating new body piece after head
+        newPiece = Body.CreateBody();
+        this.BodyLinkedList.InsertAfter(position, this.BodyLinkedList.head)
+        Grid.Append(position.x, position.y, newPiece);
+
     }
 
     Move(){

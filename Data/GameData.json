@@ -11,11 +11,7 @@
         "Width": 600,
         "Height": 600,
         "Rows": 11,
-        "Columnds": 11
-    },
-
-    "Food":{
-        "MaxAvailable": 1
+        "Columns": 11
     }
 
 }

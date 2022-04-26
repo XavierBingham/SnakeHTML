@@ -5,7 +5,7 @@ let context = canvas.getContext("2d");
 
 export default class GridSystem {
 
-    static _Settings;
+    _Settings;
     static Grid;
     static EmptySpaces;
 
@@ -18,14 +18,27 @@ export default class GridSystem {
             canvas.height = data.Grid.Height;
             GridSystem._Settings = {
                 Rows: data.Grid.Rows,
-                Columnds: data.Grid.Columns
+                Columns: data.Grid.Columns
             }
         })
 
         //Data setup
         this.Grid = [this._Settings.Rows][this._Settings.Columns];
-        this.EmptySpaces = new LinkedList();
+        this.EmptySpaces = [];
 
+    }
+
+    static GetRandomSpace(){
+        success = false;
+        while(!success) {
+            const randomIndex = Math.random() * this.EmptySpaces.length;
+            const randomSpace = this.EmptySpaces[randomIndex];
+            randomSpace.slice(randomIndex);
+            if(this.Grid[randomSpace.row][randomSpace.column] === undefined){
+                success = true;
+                return randomSpace;
+            }
+        }
     }
 
     static Append(row, column, element){
@@ -33,10 +46,34 @@ export default class GridSystem {
         this.Grid[row][column] = element;
     }
 
+    static Move(fromRow, fromColumn, toRow, toColumn){
+        this.Grid[toRow][toColumn] = this.Grid[fromRow][fromColumn];
+        this.Grid[fromRow][fromColumn] = undefined;
+        //move graphical position of the element
+    }
+
     static Swap(row1, column1, row2, column2){
-        const tempStorage = this.Grid[row1][column1];
-        this.Grid[row1][column1] = this.Grid[row2][column2];
-        this.Grid[row2][column2] = tempStorage;
+        const storage1 = this.Grid[row1][column1];
+        const storage2 = this.Grid[row2][column2];
+        this.Grid[row1][column1] = storage2;
+        this.Grid[row2][column2] = storage1;
+        //swap graphical positions of the elements
+    }
+
+    static Clear(){
+        this.EmptySpaces = [];
+        for(let row = 0; row < this._Settings.Rows; row++){
+            for(let column = 0; column < this._Settings.Columns; column++){
+                if(this.Grid[row][column] !== undefined){
+                    document.removeChild(this.Grid[row][column]);
+                    this.Grid[row][column] = undefined;
+                }
+                this.EmptySpaces.push({
+                    Row: row,
+                    Column: column
+                });
+            }
+        }
     }
 
 }
