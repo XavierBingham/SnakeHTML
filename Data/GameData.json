@@ -1,0 +1,21 @@
+{
+
+    "Player":{
+        "StartLength": 2,
+        "StartUpdateInterval": ".5",
+        "MaxUpdateInterval": ".1",
+        "UpdateIntervalDecrement": ".1"
+    },
+
+    "Grid":{
+        "Width": 600,
+        "Height": 600,
+        "Rows": 11,
+        "Columnds": 11
+    },
+
+    "Food":{
+        "MaxAvailable": 1
+    }
+
+}
