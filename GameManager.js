@@ -1,9 +1,12 @@
 import SnakeCharacter from "./Character/SnakeCharacter.js";
 import GridSystem from "./Grid/GridSystem.js";
+import InputManager from "./Input/InputManager.js";
 
 let _Settings = {
     UpdateInterval: 10
 }
+
+let InputManagerComponent;
 
 let GameManager; GameManager = {
 
@@ -13,7 +16,8 @@ let GameManager; GameManager = {
 
     Init(){
 
-        console.log("Initializing Game...")
+        console.log("Initializing Game...");
+        InputManagerComponent = new InputManager();
         GridSystem.Init();
         GameManager.Character = new SnakeCharacter();
         GameManager.RestartGame();
@@ -22,11 +26,16 @@ let GameManager; GameManager = {
 
     RestartGame(){
 
-        console.log("Restarting Game...")
+        console.log("Restarting Game...");
         GameManager.Score = 0;
-        GameManager.Character.Respawn(10, 10);
-        let lastUpdate = Date.now();
+        GameManager.Character.Respawn(5,5);
 
+        InputManagerComponent.EnableBind("moveLeft");
+        InputManagerComponent.EnableBind("moveRight");
+        InputManagerComponent.EnableBind("moveUp");
+        InputManagerComponent.EnableBind("moveDown");
+
+        let lastUpdate = Date.now();
         let gameRender; gameRender = setInterval(function(){
 
             if(GameManager.GameState !== "Playing"){ clearInterval(gameRender); }

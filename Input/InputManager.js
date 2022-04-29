@@ -17,8 +17,9 @@ export default class InputManager {
 
         //mapping all binds
         for(let [bindId, bindInfo] of inputBinds){
-
+            
             const newInputBind = {
+                BindName:bindId,
                 InputHandler:bindInfo.InputHandler,
                 Keybinds:bindInfo.Keybinds,
                 Enabled:false
@@ -97,10 +98,11 @@ export default class InputManager {
         this.KeysDown[pressedKey] = PressedDown;
 
         if(keyLookup !== undefined){
-            for(let [bindId, inputBind] of this.KeyMapLookup[pressedKey]){
+            for(let key in keyLookup){
+                const inputBind = keyLookup[key];
                 if(inputBind.Enabled){
                     if(inputBind.InputHandler !== undefined){
-                        inputBind.InputHandler(this, InputObject, bindId, PressedDown);
+                        inputBind.InputHandler(this, InputObject, inputBind.BindName, PressedDown);
                     }
                     break;
                 }

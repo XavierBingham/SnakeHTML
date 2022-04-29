@@ -1,3 +1,22 @@
 #playing-field {
     background-color: green;
 }
+
+/*
+    Snake character styles
+*/
+.character-body-piece {
+    background-color: orangered;
+}
+
+.character-head-piece {
+    background-color: orange;
+}
+
+/*
+    Food styles
+*/
+
+.food {
+    background-color: red;
+}

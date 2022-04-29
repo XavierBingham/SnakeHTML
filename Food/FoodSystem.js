@@ -1,4 +1,3 @@
-import Food from "./Food.js";
 import Grid from "../Grid/GridSystem.js";
 
 export default class FoodSystem {
@@ -7,9 +6,8 @@ export default class FoodSystem {
 
     static SpawnFood(){
         const randomSpace = Grid.GetRandomSpace();
-        const newFood = Food.CreateFood();
         Food++;
-        Grid.Append(randomSpace.Row, randomSpace.Column, newFood);
+        Grid.Append(randomSpace.Row, randomSpace.Column, "Food");
     }
 
     static FoodConsumed(){

@@ -1,6 +1,6 @@
 export default {
 
     axis: "y",
-    direction: -1,
+    direction: 1,
 
 }

@@ -1,8 +1,8 @@
 import LinkedList from "../Utils/LinkedList.js";
 import MoveInfo from "../Input/MoveInfo.js";
-import Body from "./Body.js";
 import MathUtil from "../Utils/MathUtil.js";
 import Grid from "../Grid/GridSystem.js";
+import GameManager from "../GameManager.js";
 
 let _Settings;
 
@@ -34,7 +34,7 @@ export default class SnakeCharacter {
 
         this.LastMoveDirection = {
             x: 0,
-            y: -1,
+            y: 1,
         }
 
     }
@@ -47,10 +47,10 @@ export default class SnakeCharacter {
 
         //update move direction
         MoveInfo.axis = "y";
-        MoveInfo.direction = -1;
+        MoveInfo.direction = 1;
         this.LastMoveDirection = {
             x: 0,
-            y: -1,
+            y: 1,
         }
 
         //reset snake data
@@ -60,23 +60,23 @@ export default class SnakeCharacter {
         this.BodyLinkedList.Clear();
 
         for(let index = 0; index < _Settings.StartLength; index++){
-            let newPiece;
+            let entityType;
             let position;
             if(index === 0){
-                newPiece = Body.CreateHead();
+                entityType = "PlayerHead";
                 position = {
                     x: spawnRow,
                     y: spawnColumn,
                 }
             }else{ // TO DO: update to wrap around the board to find an empty space for longer snakes
-                newPiece = Body.CreateBody();
+                entityType = "PlayerBody";
                 position = {
                     x: spawnRow,
                     y: spawnColumn - index,
                 }
             }
             this.BodyLinkedList.Push(position);
-            Grid.Append(position.x, position.y, newPiece);
+            Grid.Append(position.x, position.y, entityType);
         }
 
     }
@@ -84,31 +84,52 @@ export default class SnakeCharacter {
     Grow(){
 
         //updating head position
-        currHeadPosition = this.BodyLinkedList.head.storage;
-        position = {
-            x: currHeadPosition.x + (MoveInfo.axis == "x")?MoveInfo.direction:0,
-            y: currHeadPosition.y + (MoveInfo.axis == "y")?MoveInfo.direction:0,
+        const currHeadPosition = this.BodyLinkedList.head.storage;
+        const newPosition = {
+            x: currHeadPosition.x + ((MoveInfo.axis == "x")?MoveInfo.direction:0),
+            y: currHeadPosition.y + ((MoveInfo.axis == "y")?MoveInfo.direction:0),
         }
-        this.BodyLinkedList.Push(position);
-        this.LastMoveDirection.x = position.x;
-        this.LastMoveDirection.y = position.y;
+        this.BodyLinkedList.Push(newPosition);
+        this.LastMoveDirection.x = newPosition.x;
+        this.LastMoveDirection.y = newPosition.y;
         Grid.Move(
             currHeadPosition.x,
             currHeadPosition.y,
-            position.x,
-            position.y
+            newPosition.x,
+            newPosition.y
         );
-        this.BodyLinkedList.head.SetStorage(position);
+        this.BodyLinkedList.head.SetStorage(newPosition);
 
         //creating new body piece after head
-        newPiece = Body.CreateBody();
-        this.BodyLinkedList.InsertAfter(position, this.BodyLinkedList.head)
-        Grid.Append(position.x, position.y, newPiece);
+        this.BodyLinkedList.InsertAfter(newPosition, this.BodyLinkedList.head)
+        Grid.Append(currHeadPosition.x, currHeadPosition.y, "PlayerBody");
+
+    }
+
+    ShrinkTail(){
+
+        const currTailPosition = this.BodyLinkedList.tail.storage;
+        Grid.Remove(currTailPosition.x, currTailPosition.y);
+        this.BodyLinkedList.Remove(this.BodyLinkedList.tail);
 
     }
 
     Move(){
+        console.log(MoveInfo.axis, MoveInfo.direction)
+        const currHeadPosition = this.BodyLinkedList.head.storage;
+        const nextPosition = {
+            x: currHeadPosition.x + ((MoveInfo.axis == "x")?MoveInfo.direction:0),
+            y: currHeadPosition.y + ((MoveInfo.axis == "y")?MoveInfo.direction:0),
+        }
         
+        if(Grid.IsOccupied(nextPosition.x, nextPosition.y)){
+            GameManager.EndGame();
+            return;
+        }
+
+        this.Grow();
+        this.ShrinkTail();
+
     }
 
     Update(DeltaTime){

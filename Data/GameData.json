@@ -1,8 +1,8 @@
 {
 
     "Player":{
-        "StartLength": 2,
-        "StartUpdateInterval": ".5",
+        "StartLength": 1,
+        "StartUpdateInterval": ".1",
         "MaxUpdateInterval": ".1",
         "UpdateIntervalDecrement": ".1"
     },
@@ -12,6 +12,18 @@
         "Height": 600,
         "Rows": 11,
         "Columns": 11
+    },
+
+    "CanvasEntityModel":{
+        "PlayerBody":{
+            "color": "#eb9c34"
+        },
+        "PlayerHead":{
+            "color": "#e5eb34"
+        },
+        "Food":{
+            "color": "#eb3434"
+        }
     }
 
 }
