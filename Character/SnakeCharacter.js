@@ -3,6 +3,7 @@ import MoveInfo from "../Input/MoveInfo.js";
 import MathUtil from "../Utils/MathUtil.js";
 import Grid from "../Grid/GridSystem.js";
 import GameManager from "../GameManager.js";
+import FoodSystem from "../Food/FoodSystem.js";
 
 let _Settings;
 
@@ -10,16 +11,13 @@ $.ajaxSetup ({ async: false })
 $.getJSON ("/Data/GameData.json", function(data){
     _Settings = {
         StartLength: parseFloat(data.Player.StartLength),
-        StartUpdateInterval: parseFloat(data.Player.StartUpdateInterval),
-        MaxUpdateInterval: parseFloat(data.Player.MaxUpdateInterval),
-        UpdateIntervalDecrement: parseFloat(data.Player.UpdateIntervalDecrement),
+        StartUpdateInterval: parseFloat(data.Player.StartUpdateInterval)
     }
 })
 
 export default class SnakeCharacter {
 
     BodyLinkedList;
-    LastMoveDirection;
     UpdateInterval;
 
     LastUpdate;
@@ -32,11 +30,6 @@ export default class SnakeCharacter {
         this.UpdateInterval = _Settings.StartUpdateInterval;
         this.TimePassed = 0;
 
-        this.LastMoveDirection = {
-            x: 0,
-            y: 1,
-        }
-
     }
 
     IncreaseSpeed(){
@@ -48,10 +41,8 @@ export default class SnakeCharacter {
         //update move direction
         MoveInfo.axis = "y";
         MoveInfo.direction = 1;
-        this.LastMoveDirection = {
-            x: 0,
-            y: 1,
-        }
+        MoveInfo.prevAxis = "y";
+        MoveInfo.prevDirection = 1;
 
         //reset snake data
         this.UpdateInterval = _Settings.StartUpdateInterval;
@@ -75,23 +66,21 @@ export default class SnakeCharacter {
                     y: spawnColumn - index,
                 }
             }
-            this.BodyLinkedList.Push(position);
+            this.BodyLinkedList.InsertAtEnd(position);
             Grid.Append(position.x, position.y, entityType);
         }
 
     }
 
-    Grow(){
+    GrowHead(currMoveDirection){
 
         //updating head position
         const currHeadPosition = this.BodyLinkedList.head.storage;
         const newPosition = {
-            x: currHeadPosition.x + ((MoveInfo.axis == "x")?MoveInfo.direction:0),
-            y: currHeadPosition.y + ((MoveInfo.axis == "y")?MoveInfo.direction:0),
+            x: currHeadPosition.x + ((currMoveDirection.axis == "x")?currMoveDirection.direction:0),
+            y: currHeadPosition.y + ((currMoveDirection.axis == "y")?currMoveDirection.direction:0),
         }
         this.BodyLinkedList.Push(newPosition);
-        this.LastMoveDirection.x = newPosition.x;
-        this.LastMoveDirection.y = newPosition.y;
         Grid.Move(
             currHeadPosition.x,
             currHeadPosition.y,
@@ -115,20 +104,38 @@ export default class SnakeCharacter {
     }
 
     Move(){
-        console.log(MoveInfo.axis, MoveInfo.direction)
+        
+        const currMoveDirection = {
+            axis: MoveInfo.axis,
+            direction: MoveInfo.direction
+        }
         const currHeadPosition = this.BodyLinkedList.head.storage;
         const nextPosition = {
-            x: currHeadPosition.x + ((MoveInfo.axis == "x")?MoveInfo.direction:0),
-            y: currHeadPosition.y + ((MoveInfo.axis == "y")?MoveInfo.direction:0),
-        }
-        
-        if(Grid.IsOccupied(nextPosition.x, nextPosition.y)){
-            GameManager.EndGame();
-            return;
+            x: currHeadPosition.x + ((currMoveDirection.axis == "x")?currMoveDirection.direction:0),
+            y: currHeadPosition.y + ((currMoveDirection.axis == "y")?currMoveDirection.direction:0),
         }
 
-        this.Grow();
-        this.ShrinkTail();
+        MoveInfo.prevAxis = currMoveDirection.axis;
+        MoveInfo.prevDirection = currMoveDirection.direction;
+        
+        const collisionInfo = Grid.IsOccupied(nextPosition.x, nextPosition.y);
+        let foodCollision = false;
+        if(collisionInfo.collision){
+            console.log(collisionInfo.entity)
+            if(collisionInfo.entity === "Food"){
+                FoodSystem.FoodConsumed();
+                Grid.Remove(nextPosition.x, nextPosition.y);
+                foodCollision = true;
+            }else{
+                GameManager.EndGame();
+                return;
+            }
+        }
+
+        this.GrowHead(currMoveDirection);
+        if(!foodCollision){
+            this.ShrinkTail();
+        }
 
     }
 

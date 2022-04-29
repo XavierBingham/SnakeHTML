@@ -1,6 +1,7 @@
 import SnakeCharacter from "./Character/SnakeCharacter.js";
 import GridSystem from "./Grid/GridSystem.js";
 import InputManager from "./Input/InputManager.js";
+import FoodSystem from "./Food/FoodSystem.js";
 
 let _Settings = {
     UpdateInterval: 10
@@ -27,6 +28,8 @@ let GameManager; GameManager = {
     RestartGame(){
 
         console.log("Restarting Game...");
+        GridSystem.ResetGrid();
+
         GameManager.Score = 0;
         GameManager.Character.Respawn(5,5);
 
@@ -34,6 +37,8 @@ let GameManager; GameManager = {
         InputManagerComponent.EnableBind("moveRight");
         InputManagerComponent.EnableBind("moveUp");
         InputManagerComponent.EnableBind("moveDown");
+
+        FoodSystem.SpawnFood();
 
         let lastUpdate = Date.now();
         let gameRender; gameRender = setInterval(function(){
@@ -50,6 +55,8 @@ let GameManager; GameManager = {
     },
 
     EndGame(){
+
+        FoodSystem.Reset();
 
         console.log("Game Ended.");
         GameManager.GameState = "Results";

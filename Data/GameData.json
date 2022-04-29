@@ -1,10 +1,8 @@
 {
 
     "Player":{
-        "StartLength": 1,
-        "StartUpdateInterval": ".1",
-        "MaxUpdateInterval": ".1",
-        "UpdateIntervalDecrement": ".1"
+        "StartLength": 5,
+        "StartUpdateInterval": ".13"
     },
 
     "Grid":{

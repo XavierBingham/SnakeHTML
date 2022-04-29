@@ -39,14 +39,16 @@ export default class GridSystem {
     }
 
     static GetRandomSpace(){
-        success = false;
-        while(!success) {
-            const randomIndex = Math.random() * this.EmptySpaces.length;
-            const randomSpace = this.EmptySpaces[randomIndex];
-            randomSpace.slice(randomIndex);
-            if(this.Grid[randomSpace.row][randomSpace.column] === undefined){
-                success = true;
-                return randomSpace;
+        let success = false;
+        if(this.EmptySpaces.length > 0){
+            while(!success) {
+                const randomIndex = Math.floor(Math.random() * this.EmptySpaces.length);
+                const randomSpace = this.EmptySpaces[randomIndex];
+                this.EmptySpaces.slice(randomIndex);
+                if(this.Grid[randomSpace.row][randomSpace.column] === undefined){
+                    success = true;
+                    return randomSpace;
+                }
             }
         }
     }
@@ -103,12 +105,18 @@ export default class GridSystem {
 
     static IsOccupied(row, column){
         if(row < 0 || row >= this._Settings.Rows || column < 0 || column >= this._Settings.Columns){
-            return true;
+            return {
+                collision: true,
+                entity: "Wall"
+            };
         }
-        return this.Grid[row][column] !== undefined;
+        return {
+            collision: this.Grid[row][column] !== undefined,
+            entity: this.Grid[row][column]
+        };
     }
 
-    static Clear(){
+    static ResetGrid(){
         this.EmptySpaces = [];
         for(let row = 0; row < this._Settings.Rows; row++){
             for(let column = 0; column < this._Settings.Columns; column++){
@@ -116,8 +124,8 @@ export default class GridSystem {
                     this.Grid[row][column] = undefined;
                 }
                 this.EmptySpaces.push({
-                    Row: row,
-                    Column: column
+                    row: row,
+                    column: column
                 });
             }
         }

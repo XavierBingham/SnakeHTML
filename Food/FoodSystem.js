@@ -2,20 +2,29 @@ import Grid from "../Grid/GridSystem.js";
 
 export default class FoodSystem {
 
-    static Food;
+    static FoodLocation;
 
     static SpawnFood(){
         const randomSpace = Grid.GetRandomSpace();
-        Food++;
-        Grid.Append(randomSpace.Row, randomSpace.Column, "Food");
+        if(randomSpace !== undefined){
+            this.FoodLocation = {
+                x: randomSpace.row,
+                y: randomSpace.column
+            }
+            Grid.Append(randomSpace.row, randomSpace.column, "Food");
+        }
     }
 
     static FoodConsumed(){
-        Food--;
+        Grid.Remove(this.FoodLocation.x, this.FoodLocation.y);
+        this.SpawnFood();
     }
 
     static Reset(){
-        Food = 0;
+        if(this.FoodLocation !== undefined){
+            Grid.Remove(this.FoodLocation.x, this.FoodLocation.y);
+            this.FoodLocation = undefined;
+        }
     }
 
 }
