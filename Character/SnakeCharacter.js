@@ -23,12 +23,16 @@ export default class SnakeCharacter {
     LastUpdate;
     TimePassed;
 
+    CollectFoodSound;
+
     constructor(){
 
         this.BodyLinkedList = new LinkedList();
         
         this.UpdateInterval = _Settings.StartUpdateInterval;
         this.TimePassed = 0;
+
+        this.CollectFoodSound = new Audio("/Sounds/apple-collect.wav");
 
     }
 
@@ -126,6 +130,7 @@ export default class SnakeCharacter {
                 FoodSystem.FoodConsumed();
                 Grid.Remove(nextPosition.x, nextPosition.y);
                 foodCollision = true;
+                this.CollectFoodSound.play();
             }else{
                 GameManager.EndGame();
                 return;

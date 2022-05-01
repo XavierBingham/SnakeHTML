@@ -5,7 +5,7 @@ let context = canvas.getContext("2d");
 
 export default class GridSystem {
 
-    _Settings;
+    static _Settings;
     static Grid;
     static EmptySpaces;
     static EntityData;
@@ -22,7 +22,7 @@ export default class GridSystem {
                 Rows: data.Grid.Rows,
                 Columns: data.Grid.Columns,
                 CellSizeX: data.Grid.Width / data.Grid.Rows,
-                CellSizeY: data.Grid.Height / data.Grid.Columns,
+                CellSizeY: data.Grid.Height / data.Grid.Columns
             }
             
             GridSystem.EntityData = data.CanvasEntityModel;
@@ -117,6 +117,7 @@ export default class GridSystem {
     }
 
     static ResetGrid(){
+        context.clearRect(0, 0, canvas.width, canvas.height);
         this.EmptySpaces = [];
         for(let row = 0; row < this._Settings.Rows; row++){
             for(let column = 0; column < this._Settings.Columns; column++){

@@ -14,6 +14,9 @@ let GameManager; GameManager = {
     GameState: "Playing",
     Character: undefined,
     Score: 0,
+    SoundEffects:{
+        "GameOver": new Audio("/Sounds/game-over.wav")
+    },
 
     Init(){
 
@@ -31,8 +34,12 @@ let GameManager; GameManager = {
         GridSystem.ResetGrid();
 
         GameManager.Score = 0;
-        GameManager.Character.Respawn(5,5);
+        GameManager.Character.Respawn(
+            parseInt(GridSystem._Settings.Rows/2),
+            parseInt(GridSystem._Settings.Columns/2)
+        );
 
+        //enable movement input
         InputManagerComponent.EnableBind("moveLeft");
         InputManagerComponent.EnableBind("moveRight");
         InputManagerComponent.EnableBind("moveUp");
@@ -56,7 +63,14 @@ let GameManager; GameManager = {
 
     EndGame(){
 
+        this.SoundEffects["GameOver"].play();
         FoodSystem.Reset();
+
+        //disable movement input
+        InputManagerComponent.DisableBind("moveLeft");
+        InputManagerComponent.DisableBind("moveRight");
+        InputManagerComponent.DisableBind("moveUp");
+        InputManagerComponent.DisableBind("moveDown");
 
         console.log("Game Ended.");
         GameManager.GameState = "Results";

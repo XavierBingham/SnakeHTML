@@ -2,14 +2,14 @@
 
     "Player":{
         "StartLength": 5,
-        "StartUpdateInterval": ".13"
+        "StartUpdateInterval": ".12"
     },
 
     "Grid":{
         "Width": 600,
         "Height": 600,
-        "Rows": 11,
-        "Columns": 11
+        "Rows": 21,
+        "Columns": 21
     },
 
     "CanvasEntityModel":{
